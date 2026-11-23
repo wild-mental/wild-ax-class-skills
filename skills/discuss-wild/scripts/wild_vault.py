@@ -333,8 +333,11 @@ def cmd_forget(a):
 def cmd_profile(a):
     cache = _load_cache()
     prof = cache.setdefault("profile", {})
+    if prof.pop("group", None) is not None:
+        # legacy field: it held the class, which now always comes from the password slot label
+        _save_cache(cache)
     if a.action == "set":
-        for k in ("name", "group"):
+        for k in ("name", "team"):
             v = getattr(a, k)
             if v is not None:
                 prof[k] = v
@@ -503,7 +506,8 @@ def main():
     pr = sub.add_parser("profile")
     pr.add_argument("action", choices=["get", "set"])
     pr.add_argument("--name")
-    pr.add_argument("--group", help="class / section, e.g. 'G10-B'")
+    pr.add_argument("--team", help="optional sub-unit inside the class, e.g. a team or '2조' "
+                    "(the class itself comes from the password slot label)")
     pr.set_defaults(fn=cmd_profile)
 
     # teacher

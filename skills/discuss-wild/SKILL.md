@@ -62,12 +62,12 @@ Wild는 이것을 보고 수업이나 멘토링 세션의 한 꼭지로 준비�
 | `resources` | 참고 자료 링크 (선택) | |
 | `timing` | 희망 시기 (선택) | 다음 수업 / 이번 달 / 아무 때나 |
 
-이름과 반은 `profile get`으로 먼저 확인한다(시리즈 공용 프로필).
+이름과 소속 조는 `profile get`으로 먼저 확인한다(시리즈 공용 프로필). 이름이 없으면 미리보기 뒤의 **학생 안내** 한 번으로 묻고 `profile set --name "…" --team "…"`로 저장한다(소속 조가 없다고 하면 `--team` 없이 저장). **반은 묻지 않는다**(반 암호로 자동으로 정해진다).
 
 ### 3) 미리보기와 승인
 
 ```
-제목: [discuss-wild] <topic> · <group>
+제목: [discuss-wild]<topic>-[<반 라벨>][<team>][<name>]
 
 Wild 선생님, 안녕하세요. <name>입니다.
 <setting>에서 함께 이야기해 보고 싶은 주제가 있어 제안드립니다.
@@ -89,6 +89,12 @@ Wild 선생님, 안녕하세요. <name>입니다.
 영어로 쓸 때는 `Topic / What got me curious / What I think now / What I'm unsure about / Directions I'd like to explore / Name mention in class / Resources / Timing`을 쓴다.
 제목 태그 `[discuss-wild]`는 항상 유지한다.
 
+**학생 안내 (짧게)**: 첫 미리보기에서 반 라벨·소속·이름이 아직 비어 있으면 빈칸 그대로 보여 주고, 필요한 것만 아래처럼 **한 번에** 묻는다(잠금 여부는 부록 A의 `status`·A-1로 먼저 확인해, 이미 열려 있으면 반 비밀키는 묻지 않는다). 이미 알고 있는 항목은 문장에서 뺀다.
+
+> 제목의 빈칸을 채우려면 **반 비밀키**와 **이름**이 필요해요. 소속 조가 있으면 함께 알려 주세요(없으면 `[개인]`으로 표기돼요).
+
+제목이 어떻게 만들어지는지(반 라벨, 슬롯, 자동 입력 등)는 설명하지 않는다. 학생이 물을 때만 답한다.
+
 미리보기를 보여줄 때, `my_view`가 학생이 한 말과 같은 뜻인지 한 번 더 확인한다: "제가 정리한 표현이 원래 생각과 같나요?"
 
 ### 4) 채널 설정 열기
@@ -99,8 +105,8 @@ Wild 선생님, 안녕하세요. <name>입니다.
 
 ```bash
 python3 <skill_dir>/scripts/compose.py --config <skill_dir>/config/channels.enc.json --skill discuss-wild <<'JSON'
-{"subject": "<제목>", "body": "<미리보기 본문>",
- "fields": {"name": "…", "group": "…", "topic": "<topic>",
+{"subject": "[discuss-wild] <topic>", "body": "<미리보기 본문>",
+ "fields": {"name": "…", "team": "<소속, 없으면 생략>", "topic": "<topic>",
             "message": "<my_view> / 방향: <direction>",
             "details": "계기: <trigger> / 열린 질문: <unsure> / 자리: <setting> / 이름: <credit>",
             "link": "<resources>", "when": "<timing>"}}
@@ -115,7 +121,7 @@ JSON
 
 ①을 쓸 수 없어 ②·③으로 넘어가면, **부록 B**에 따라 Gmail 연결을 한 번 안내한다.
 
-**반 라벨**: 메일·폼·mailto에는 `compose.py` 출력의 `subject`·`body`를 **그대로** 쓴다. 제목은 `[<skill>][<반 라벨>] <학생 이름> · <주제> · <반>` 형태가 되도록 반 라벨과 **학생 이름**(`fields.name`)이 자동으로 들어가고, 본문 끝에 `(반: <반 라벨>)`, 폼의 반 칸에도 라벨이 들어간다. 그래서 `fields.name`은 반드시 채운다(프로필 이름). 미리보기에서도 이 제목 그대로 보여준다.
+**반 라벨과 소속**: 메일·폼·mailto에는 `compose.py` 출력의 `subject`·`body`를 **그대로** 쓴다. `compose.py`에는 제목을 `[<skill>] <주제>`까지만 넘기면, 반 라벨·소속(`fields.team`)·**학생 이름**(`fields.name`)이 자동으로 붙어 `[<skill>]<주제>-[<반 라벨>][<소속>][<학생 이름>]` 형태가 된다(소속 조가 없으면 `[개인]`). 반은 학생이 입력한 반 암호의 슬롯 라벨이므로 **학생에게 묻거나 제목에 따로 적지 않는다.** 본문 끝에는 `(반: <반 라벨> · 소속: <소속 또는 개인>)`, 폼의 Class 칸에는 `<반 라벨> · <소속>`이 들어간다. 그래서 `fields.name`은 반드시 채운다(프로필 이름). 미리보기에서도 이 제목 그대로 보여준다.
 
 ### 6) 마무리
 
@@ -176,7 +182,7 @@ TOKEN
 
 ### A-2. 반 암호로 잠금 해제
 
-학생에게 **"Wild 선생님께 받은 반 암호를 입력해 주세요"** 라고 요청하고, stdin으로 넘긴다 (명령행 인자로 넘기지 않는다):
+미리보기의 **학생 안내**에서 이미 받았으면 다시 묻지 않는다. 아니면 학생에게 **"Wild 선생님께 받은 반 비밀키를 입력해 주세요"** 라고 요청하고, stdin으로 넘긴다 (명령행 인자로 넘기지 않는다):
 
 ```bash
 python3 <skill_dir>/scripts/wild_vault.py unlock --config <skill_dir>/config/channels.enc.json --skill discuss-wild <<'PW'

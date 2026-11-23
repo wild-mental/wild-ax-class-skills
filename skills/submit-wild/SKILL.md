@@ -31,7 +31,7 @@ Wild 입장에서는 열리지 않는 링크, 초안 버전, 빠진 설명 같�
 | 필드 | 내용 | 비고 |
 |---|---|---|
 | `assignment` | 과제명 또는 과제 코드 | 필수 |
-| `group` | 반·과목 | 프로필에 있으면 그대로 |
+| `team` | 소속 조 (있을 때만) | 프로필에 있으면 그대로. 없으면 `개인`. 반은 자동 |
 | `link` | 제출물 링크 | 필수. 여러 개면 모두 |
 | `version` | 최종본 / 수정 제출 | 수정 제출이면 무엇이 바뀌었는지 한 줄 |
 | `ai_use` | AI 사용 내역 | **필수.** 아래 질문으로 받음 |
@@ -51,7 +51,7 @@ Wild 입장에서는 열리지 않는 링크, 초안 버전, 빠진 설명 같�
 python3 -c "from datetime import datetime; from zoneinfo import ZoneInfo; print(datetime.now(ZoneInfo('<학생 시간대>')).strftime('%Y-%m-%d %a %H:%M %Z'))"
 ```
 
-이름과 반은 `profile get`으로 먼저 확인한다(시리즈 공용 프로필).
+이름과 소속 조는 `profile get`으로 먼저 확인한다(시리즈 공용 프로필). 이름이 없으면 미리보기 뒤의 **학생 안내** 한 번으로 묻고 `profile set --name "…" --team "…"`로 저장한다(소속 조가 없다고 하면 `--team` 없이 저장). **반은 묻지 않는다**(반 암호로 자동으로 정해진다).
 
 ### 2) 제출 전 확인
 
@@ -135,7 +135,7 @@ Drive 커넥터 없이 Google 링크를, GitHub 커넥터 없이 GitHub 링크�
 ### 3) 미리보기와 승인
 
 ```
-제목: [submit-wild] <assignment> · <group>
+제목: [submit-wild]<assignment>-[<반 라벨>][<team>][<name>]
 
 Wild 선생님, 안녕하세요. <name>입니다.
 <assignment> 과제를 제출합니다.
@@ -154,6 +154,12 @@ Wild 선생님, 안녕하세요. <name>입니다.
 영어로 쓸 때는 `Submission / Version / Submitted at / AI use / Collaborators / Notes / Pre-submission check`를 쓴다.
 제목 태그 `[submit-wild]`는 항상 유지한다.
 
+**학생 안내 (짧게)**: 첫 미리보기에서 반 라벨·소속·이름이 아직 비어 있으면 빈칸 그대로 보여 주고, 필요한 것만 아래처럼 **한 번에** 묻는다(잠금 여부는 부록 A의 `status`·A-1로 먼저 확인해, 이미 열려 있으면 반 비밀키는 묻지 않는다). 이미 알고 있는 항목은 문장에서 뺀다.
+
+> 제목의 빈칸을 채우려면 **반 비밀키**와 **이름**이 필요해요. 소속 조가 있으면 함께 알려 주세요(없으면 `[개인]`으로 표기돼요).
+
+제목이 어떻게 만들어지는지(반 라벨, 슬롯, 자동 입력 등)는 설명하지 않는다. 학생이 물을 때만 답한다.
+
 ### 4) 채널 설정 열기
 
 **부록 A** 절차로 채널 설정을 연다. 대부분은 학생에게 묻지 않고 자동으로 열린다.
@@ -164,8 +170,8 @@ submit-wild는 열린 뒤 설정(`filename_rule`, `checklist`)도 함께 읽는�
 
 ```bash
 python3 <skill_dir>/scripts/compose.py --config <skill_dir>/config/channels.enc.json --skill submit-wild <<'JSON'
-{"subject": "<제목>", "body": "<미리보기 본문>",
- "fields": {"name": "…", "group": "…", "topic": "<assignment>",
+{"subject": "[submit-wild] <assignment>", "body": "<미리보기 본문>",
+ "fields": {"name": "…", "team": "<소속, 없으면 생략>", "topic": "<assignment>",
             "message": "<version> · 제출 전 확인 결과",
             "link": "<link>", "when": "<submitted_at>",
             "ai_use": "<ai_use>", "details": "<collaborators, notes>"}}
@@ -180,7 +186,7 @@ JSON
 
 ①을 쓸 수 없어 ②·③으로 넘어가면, **부록 B**에 따라 Gmail 연결을 한 번 안내한다.
 
-**반 라벨**: 메일·폼·mailto에는 `compose.py` 출력의 `subject`·`body`를 **그대로** 쓴다. 제목은 `[<skill>][<반 라벨>] <학생 이름> · <주제> · <반>` 형태가 되도록 반 라벨과 **학생 이름**(`fields.name`)이 자동으로 들어가고, 본문 끝에 `(반: <반 라벨>)`, 폼의 반 칸에도 라벨이 들어간다. 그래서 `fields.name`은 반드시 채운다(프로필 이름). 미리보기에서도 이 제목 그대로 보여준다.
+**반 라벨과 소속**: 메일·폼·mailto에는 `compose.py` 출력의 `subject`·`body`를 **그대로** 쓴다. `compose.py`에는 제목을 `[<skill>] <주제>`까지만 넘기면, 반 라벨·소속(`fields.team`)·**학생 이름**(`fields.name`)이 자동으로 붙어 `[<skill>]<주제>-[<반 라벨>][<소속>][<학생 이름>]` 형태가 된다(소속 조가 없으면 `[개인]`). 반은 학생이 입력한 반 암호의 슬롯 라벨이므로 **학생에게 묻거나 제목에 따로 적지 않는다.** 본문 끝에는 `(반: <반 라벨> · 소속: <소속 또는 개인>)`, 폼의 Class 칸에는 `<반 라벨> · <소속>`이 들어간다. 그래서 `fields.name`은 반드시 채운다(프로필 이름). 미리보기에서도 이 제목 그대로 보여준다.
 
 ### 6) 마무리와 증빙
 
@@ -238,7 +244,7 @@ TOKEN
 
 ### A-2. 반 암호로 잠금 해제
 
-학생에게 **"Wild 선생님께 받은 반 암호를 입력해 주세요"** 라고 요청하고, stdin으로 넘긴다 (명령행 인자로 넘기지 않는다):
+미리보기의 **학생 안내**에서 이미 받았으면 다시 묻지 않는다. 아니면 학생에게 **"Wild 선생님께 받은 반 비밀키를 입력해 주세요"** 라고 요청하고, stdin으로 넘긴다 (명령행 인자로 넘기지 않는다):
 
 ```bash
 python3 <skill_dir>/scripts/wild_vault.py unlock --config <skill_dir>/config/channels.enc.json --skill submit-wild <<'PW'
