@@ -110,7 +110,7 @@ JSON
 ```
 
 출력: `email`, `form_url`, `mailto` (설정되지 않은 채널은 `null`), `notes`.
-`fields`의 키는 시리즈 공용 폼 규약([FORM.md](../FORM.md))을 따르며, `skill`은 자동으로 채워진다.
+`fields`의 키는 위 예시 그대로 쓴다. `skill`과 `group`(폼의 반 칸)은 자동으로 채워진다.
 
 ### 5) 3단계 폴백 전송
 
@@ -144,8 +144,6 @@ JSON
 | 종료코드 `4` | 설정 파일 손상. 학생에게 스킬 재설치를 안내하고 Wild에게 알리도록 함. |
 | 저장된 주소 지우기 | `wild_vault.py forget --skill ask-wild` (시리즈 전체: `--all`). 웹에서는 저장해 둔 접속 토큰(개인 선호, Drive의 `wild-series 접속 토큰` 파일)도 함께 지우도록 안내. |
 | 매번 반 암호를 다시 물음 | 부록 A-1의 세 곳(맥락, 과거 대화, Drive)에 토큰이 실제로 있는지 확인. 과거 대화 검색이 꺼져 있으면 A-3의 b 또는 c로 보관 |
-
-교사용 설정·암호 변경 방법은 [TEACHER.md](TEACHER.md).
 
 ---
 
