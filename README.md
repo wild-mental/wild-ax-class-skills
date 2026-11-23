@@ -41,7 +41,3 @@ wild-ax-class-skills/
 - **보내기 전에 항상 미리보기를 보여주고 승인을 받습니다.** 승인 없이는 아무것도 보내지 않습니다.
 - 선생님 연락처 등 설정은 **암호화**되어 있어 이 리포에서는 보이지 않습니다. 반 암호는 수업에서만 안내합니다.
 - 스킬이 업데이트되면 선생님이 공지합니다. 설치된 스킬은 저절로 바뀌지 않으니 다시 설치해 주세요.
-
----
-
-이 리포는 원본 레포 [`wild-mental/AI-Skills-for-Everyone`](https://github.com/wild-mental/AI-Skills-for-Everyone)의 `06_wild-teaching-skills/`에서 자동으로 생성됩니다. 수정은 원본에서 하고, 이 리포는 내보내기 스크립트로 갱신합니다.
